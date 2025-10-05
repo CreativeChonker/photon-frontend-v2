@@ -1,0 +1,391 @@
+/* ===========================
+   Workspace.css — Desktop-first, mobile-safe
+   =========================== */
+
+/* Global box sizing for predictable layout */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ---- Design tokens ---- */
+:root{
+  --bg-1:#0b0f14; --bg-2:#0a0d12;
+  --text:#e7ecf3; --muted:#a5b1c2;
+  --stroke:rgba(255,255,255,.12);
+  --brand:#7dd3fc; --brand-strong:#22d3ee; --brand-violet:#a78bfa;
+  --radius:16px; --radius-lg:20px;
+  --shadow-1:0 10px 30px rgba(0,0,0,.35);
+  --shadow-2:0 6px 18px rgba(0,0,0,.25);
+  --ui: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --page-gutter: clamp(12px, 4vw, 20px);
+}
+
+/* ---- App background ---- */
+html, body, #root { height:100% }
+body{
+  margin:0; color:var(--text); font-family:var(--ui);
+  background:
+    radial-gradient(1200px 900px at 10% -10%, #0ea5e9 0%, transparent 40%),
+    radial-gradient(1000px 800px at 100% 0%, #8b5cf6 0%, transparent 45%),
+    linear-gradient(180deg,var(--bg-1),var(--bg-2));
+  background-attachment:fixed;
+}
+
+/* ---- Glass utility ---- */
+.glass{
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+  border:1px solid var(--stroke);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+
+/* ===========================
+   Header (glass) — DESKTOP DEFAULT
+   =========================== */
+.workspace-header{
+  position:sticky; top:16px; z-index:100;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  width:100%; max-width:1280px; margin:16px auto 12px; padding:14px 18px;
+  border-radius: var(--radius-lg);
+
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+  border:1px solid var(--stroke);
+  box-shadow: var(--shadow-1);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+.workspace-header .brand{ display:flex; align-items:center; gap:12px; min-width:0 }
+.workspace-header .brand-link{ display:inline-flex; align-items:center; text-decoration:none }
+.workspace-header .logo{ width:44px; height:44px; border-radius:12px; display:block; object-fit:contain; flex:0 0 auto }
+.workspace-header h1{ margin:0; font-size:22px; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+
+.controls{ display:flex; align-items:center; gap:14px; min-width:0 }
+.toolbar{ display:flex; align-items:center; gap:10px }
+
+/* toggle */
+.toggle{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:10px; border:1px solid var(--stroke) }
+.toggle input{ accent-color:#22d3ee }
+
+/* buttons */
+.btn{
+  display:inline-flex; align-items:center; gap:8px; height:36px; padding:0 12px;
+  border-radius:10px; border:1px solid transparent; color:var(--text); cursor:pointer;
+  background:transparent; transition:transform .12s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+.btn:hover{ transform:translateY(-1px) }
+.btn.ghost{ background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid var(--stroke) }
+.btn.ghost:hover{ box-shadow:0 10px 24px rgba(0,0,0,.28) }
+
+.btn.primary.assistant{
+  height:40px; padding:0 16px; font-weight:700; color:#04131a;
+  background:linear-gradient(135deg, var(--brand-strong) 0%, var(--brand) 60%, var(--brand-violet) 120%);
+  border:1px solid rgba(125,211,252,.75);
+  box-shadow:0 12px 30px rgba(125,211,252,.30), inset 0 1px 0 rgba(255,255,255,.5);
+  border-radius:12px;
+}
+.btn.primary.assistant:hover{ box-shadow:0 16px 38px rgba(125,211,252,.40), 0 0 24px rgba(125,211,252,.40) }
+
+.btn.run-btn{
+  height:34px; padding:0 12px; border-radius:10px; border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08);
+}
+.btn.run-btn .icon{ margin-right:4px }
+
+/* ===========================
+   Layout — DESKTOP DEFAULT
+   =========================== */
+.workspace-main{
+  max-width:1280px; margin:0 auto; padding:0 18px 120px;
+  display:grid; grid-template-columns: 1.4fr 1fr; gap:18px;
+}
+.workspace-main, .terminal-pane { min-width: 0; }
+
+/* ------- Editor: rounded card around Monaco ------- */
+.editor-pane{
+  position:relative; min-height:60vh;
+}
+.editor-pane > div{            /* monaco root wrapper */
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--stroke);
+  box-shadow: var(--shadow-1);
+  background: rgba(0,0,0,.20);
+}
+.editor-pane .monaco-editor,
+.editor-pane .overflow-guard{
+  border-radius:16px !important;
+  overflow:hidden;
+}
+
+/* ===========================
+   Terminal — classic, readable (DESKTOP)
+   =========================== */
+.terminal-pane{ display:flex; flex-direction:column; gap:12px }
+.terminal-card{
+  padding:12px;
+  border-radius:14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+  border:1px solid var(--stroke);
+  box-shadow: var(--shadow-1);
+}
+.terminal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+.terminal-title{ font-weight:700; letter-spacing:.2px }
+
+/* “Horizontal gap” fix: wrap long lines and hide x-scroll */
+.terminal{
+  background:#0b0f14;
+  color:#cfe8ff;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;
+  padding:12px;
+  min-height:280px;
+
+  font-family:var(--mono);
+  font-size:13.5px; line-height:1.45;
+
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling: touch;
+
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* ===========================
+   OCR Card (desktop)
+   =========================== */
+#ws-ocr.ocr-card{
+  background:#0d131a;
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow: var(--shadow-1);
+  padding:12px;
+  border-radius:12px;
+  width:100%;
+  max-width:100%;
+}
+.ocr-head{ display:flex; align-items:center; justify-content:space-between; gap:10px }
+.ocr-title-row{ display:flex; align-items:center; gap:10px }
+.ocr-head span{ font-weight:700 }
+.ocr-sub{ font-size:12px; color:#b8c4d9; margin-top:4px }
+
+.ocr-info-btn{
+  padding:3px 10px; font-size:12px; border-radius:999px;
+  background:rgba(255,255,255,.12); color:var(--text);
+  border:1px solid rgba(255,255,255,.18); cursor:pointer;
+  transition:transform .12s ease, box-shadow .2s ease, opacity .2s;
+}
+.ocr-info-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(0,0,0,.28) }
+.ocr-info-btn:disabled{ opacity:.6; cursor:not-allowed }
+
+/* OCR meter */
+#ws-ocr .ocr-bar{
+  position:relative;
+  height:10px;
+  margin-top:8px;
+  width:100%;
+  border-radius:999px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  overflow:hidden;
+}
+#ws-ocr .ocr-fill{
+  position:absolute; left:0; top:0; bottom:0;
+  max-width:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#22d3ee,#7dd3fc);
+}
+#ws-ocr .ocr-fill.indeterminate{ width:35%; animation:ocr-indet 1.2s infinite ease-in-out }
+@keyframes ocr-indet { 0%{left:-35%} 50%{left:45%} 100%{left:110%} }
+
+/* ===========================
+   OCR overlay over editor
+   =========================== */
+.ocr-overlay{
+  position:absolute; inset:0; z-index:10;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  background:rgba(5,10,14,.35);
+  backdrop-filter: blur(2px);
+  border-radius:16px;
+}
+.ocr-spinner{
+  width:36px; height:36px; border:3px solid rgba(255,255,255,.25); border-top-color:#7dd3fc; border-radius:50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg) } }
+.ocr-msg{ font-size:14px; opacity:.95 }
+
+/* ===========================
+   OCR Details modal (readable)
+   =========================== */
+.ocr-modal-backdrop{
+  position:fixed; inset:0; z-index:1200;
+  background: rgba(0,0,0,.25);
+}
+.ocr-modal{
+  position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(640px, 92vw);
+  border-radius:14px; padding:16px 16px 14px;
+  background:#0d1117;
+  color:#f2f7ff;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow: 0 22px 54px rgba(0,0,0,.6);
+  animation: ocrPop .16s ease-out;
+}
+@keyframes ocrPop{
+  from{ opacity:0; transform:translate(-50%,-46%) scale(.98) }
+  to  { opacity:1; transform:translate(-50%,-50%) scale(1) }
+}
+.ocr-modal-header{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+.ocr-modal-header h3{ margin:0; font-size:20px; font-weight:800; letter-spacing:.2px }
+.ocr-close{
+  width:34px; height:34px; border-radius:9px; border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.10); color:var(--text); font-size:18px; line-height:32px;
+  cursor:pointer;
+}
+.ocr-close:hover{ box-shadow:0 10px 24px rgba(0,0,0,.35) }
+
+.ocr-modal-body{ font-size:15px; line-height:1.6 }
+.ocr-modal-body p{ margin:.35rem 0 .6rem }
+.ocr-criteria{ margin:.25rem 0 .9rem 1rem; padding:0 }
+.ocr-criteria li{ margin:.28rem 0 }
+.ocr-criteria li strong{ color:#ffffff }
+.ocr-tips{
+  margin-top:.6rem; font-size:14px; color:#e7f0ff;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18);
+  border-radius:12px; padding:9px 12px;
+}
+
+/* ===========================
+   DESKTOP TWEAKS (wide screens)
+   =========================== */
+@media (min-width: 1360px){
+  .workspace-main{ gap:22px; }
+}
+
+/* ===========================
+   MOBILE OVERRIDES (won’t touch desktop)
+   =========================== */
+
+/* tablets & small laptops */
+@media (max-width: 1024px){
+  .workspace-main{ grid-template-columns: 1fr; padding:0 16px 100px }
+  .terminal{ min-height:240px }
+}
+
+/* large phones / portrait tablets */
+@media (max-width: 820px){
+  .workspace-header{
+    top:10px; margin:10px auto 8px; padding:12px;
+    gap:10px; border-radius:16px;
+  }
+  .workspace-header h1{ font-size:18px }
+  .controls{ flex-wrap:wrap; gap:10px }
+  .toolbar{
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    padding-bottom:2px; gap:8px;
+  }
+  .btn{ height:34px; padding:0 10px }
+  .btn.primary.assistant{ height:36px; padding:0 14px }
+
+  .workspace-main{ grid-template-columns:1fr; gap:12px; padding:0 12px 96px }
+  .editor-pane{ min-height:52vh }
+  .terminal-card{ padding:10px }
+  .terminal{ min-height:220px; font-size:13px }
+  #ws-ocr.ocr-card{ padding:10px }
+}
+
+/* small phones */
+@media (max-width: 480px){
+  .workspace-header{ padding:10px }
+  .logo{ width:40px; height:40px }
+  .btn{ height:32px; padding:0 9px }
+  .btn.primary.assistant{ height:34px; padding:0 12px }
+
+  .terminal{ min-height:200px; font-size:12.5px }
+  #ws-ocr .ocr-sub{ font-size:11.5px }
+}
+
+/* Hide desktop header controls on mobile; FAB replaces them */
+@media (max-width: 720px) {
+  .workspace-header .controls.hide-on-mobile { display: none; }
+  .workspace-main { padding-bottom: 160px; } /* breathing room for FAB */
+}
+
+/* Make sure header title wraps nicely on small screens */
+@media (max-width: 720px) {
+  .workspace-header h1 { font-size: 18px; }
+}
+
+/* Mobile: make the Workspace header non-sticky */
+@media (max-width: 720px){
+  .workspace-header{
+    position: static !important; /* was sticky */
+    top: auto !important;
+    margin: 12px auto 10px;      /* keep some spacing */
+    width: auto;
+    max-width: 100%;
+  }
+
+  /* Optional: tighten content spacing since header no longer overlays */
+  .workspace-main{
+    padding-top: 0;
+  }
+}
+
+/* ===== Workspace header spacing parity + mobile non-sticky ===== */
+
+/* Desktop: keep the “good” spacing like Home */
+.workspace-header{
+  background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  border-radius:20px;
+  padding:14px 18px;                 /* matches Home’s comfy density */
+  margin:16px auto 12px;
+}
+
+/* Tighten grid gutters a touch so cards don’t look crowded */
+.workspace-main{ gap: 18px }
+
+/* Mobile only: header becomes non-sticky & gets lighter padding */
+@media (max-width: 720px){
+  .workspace-header{
+    position: static;                 /* was sticky on desktop; not on mobile */
+    margin: 10px auto 8px;
+    padding: 12px 14px;
+    border-radius: 18px;
+  }
+
+  /* Editor/terminal side gutters that match Assistant */
+  .workspace-main{ padding: 0 12px 120px }
+}
+
+/* Side margins so the header doesn't touch the edges on smaller viewports */
+@media (max-width: 1280px){
+  .workspace-header{
+    margin-left: calc(var(--page-gutter) + env(safe-area-inset-left, 0px));
+    margin-right: calc(var(--page-gutter) + env(safe-area-inset-right, 0px));
+  }
+}
+
+/* Make sure the header Assistant CTA isn’t hidden on mobile */
+@media (max-width: 720px){
+  .workspace-header .btn.primary.assistant{
+    display: inline-flex !important;
+  }
+}
+
+/* Desktop header controls */
+.header-actions{
+  display:flex; align-items:center; gap:12px;
+}
+
+/* Hide header controls on small screens (FAB handles actions) */
+@media (max-width:720px){
+  .header-actions{ display:none; }
+}

@@ -1,0 +1,228 @@
+/* Assistant.css — drop-in */
+
+/* ---- Tokens ---- */
+:root{
+  --bg-1:#0b0f14; --bg-2:#0a0d12;
+  --text:#e7ecf3; --muted:#a5b1c2;
+  --stroke:rgba(255,255,255,.12);
+  --brand:#7dd3fc; --brand-strong:#22d3ee; --brand-violet:#a78bfa;
+  --radius:16px; --radius-lg:22px;
+  --shadow-1:0 10px 30px rgba(0,0,0,.35);
+  --shadow-2:0 6px 18px rgba(0,0,0,.25);
+  --ui: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --mono:"Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* layout helpers */
+  --page-gutter: clamp(12px, 4vw, 20px);
+  --footer-h: 140px; /* will be overwritten from JS with the real height */
+}
+
+html, body, #root { height:100% }
+body{
+  margin:0; color:var(--text); font-family:var(--ui);
+  background:
+    radial-gradient(1200px 900px at 10% -10%, #0ea5e9 0%, transparent 40%),
+    radial-gradient(1000px 800px at 100% 0%, #8b5cf6 0%, transparent 45%),
+    linear-gradient(180deg,var(--bg-1),var(--bg-2));
+  background-attachment:fixed;
+}
+
+/* ===== Top fade (desktop only). It sits BEHIND the header. */
+.assistant-page::before{
+  content:"";
+  position:fixed; inset:0 0 auto 0; height:140px;
+  background:linear-gradient(to bottom, rgba(11,15,20,.65), rgba(11,15,20,0));
+  z-index:0; pointer-events:none;
+}
+@media (max-width: 720px){
+  .assistant-page::before{ display:none; }   /* <- no dim on phones */
+}
+
+/* ===== Header (sticky + bright, symmetric margins) ===== */
+.assistant-page .workspace-header{
+  position:sticky; 
+  top:calc(env(safe-area-inset-top,0px) + 10px);
+  z-index:1000;
+
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  max-width:1280px;
+  margin:16px auto 12px;
+  padding:14px 18px;
+  border-radius:20px;
+
+  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07));
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:var(--shadow-1);
+  backdrop-filter:blur(12px) saturate(120%); -webkit-backdrop-filter:blur(12px) saturate(120%);
+
+  /* side gutters so it never touches edges on any screen */
+  margin-left:calc(var(--page-gutter) + env(safe-area-inset-left,0px));
+  margin-right:calc(var(--page-gutter) + env(safe-area-inset-right,0px));
+}
+
+.assistant-page .brand{ display:flex; align-items:center; gap:12px }
+.assistant-page .brand-link{ display:inline-flex; align-items:center; text-decoration:none }
+.assistant-page .assistant-logo{ width:48px; height:48px; border-radius:12px; display:block; object-fit:contain }
+.assistant-page .brand-title{ margin:0; font-size:22px; font-weight:700; letter-spacing:.2px; text-shadow:0 1px 0 rgba(0,0,0,.25) }
+
+/* Buttons */
+.assistant-page .btn{ display:inline-flex; align-items:center; gap:8px; height:36px; padding:0 12px; border-radius:10px; border:1px solid transparent; color:var(--text); cursor:pointer; background:transparent; transition:transform .12s ease, box-shadow .2s ease }
+.assistant-page .btn:hover{ transform:translateY(-1px) }
+.assistant-page .btn.primary.assistant{
+  height:40px; padding:0 16px; font-weight:700; color:#04131a;
+  background:linear-gradient(135deg,var(--brand-strong),var(--brand) 60%,var(--brand-violet) 120%);
+  border:1px solid rgba(125,211,252,.75);
+  border-radius:12px;
+  box-shadow:0 12px 30px rgba(125,211,252,.30), inset 0 1px 0 rgba(255,255,255,.5);
+}
+
+/* ===== Main container ===== */
+.assistant-page .assistant-container{
+  max-width:880px; margin:18px auto 0;
+  padding:0 var(--page-gutter);
+}
+
+/* Chat body gets enough bottom space for the footer (variable). */
+.assistant-page .chat-body{
+  display:flex; flex-direction:column; gap:18px;
+  width:100%; max-width:960px; margin:0 auto;
+  padding:18px 0 calc(var(--footer-h) + 16px);  /* <-- no random gap now */
+  overflow:auto;
+}
+
+/* ===== Messages ===== */
+.assistant-page .ai-line{ display:flex; gap:10px }
+.assistant-page .ai-avatar{
+  width:36px; height:36px; border-radius:50%;
+  background:radial-gradient(closest-side, rgba(125,211,252,.25), transparent 70%);
+  box-shadow:0 0 0 2px rgba(125,211,252,.35), 0 6px 16px rgba(0,0,0,.25);
+}
+.assistant-page .ai-bubble{
+  max-width:78%;
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+  border:1px solid var(--stroke);
+  padding:10px 14px; border-radius:16px 16px 16px 6px; color:var(--text);
+  overflow-wrap:anywhere; word-break:break-word;
+}
+.assistant-page .ai-bubble p{ margin:0 0 12px; white-space:pre-wrap }
+
+.assistant-page .user-bubble{
+  align-self:flex-end; display:inline-block; max-width:70%;
+  background:linear-gradient(180deg, rgba(125,211,252,.25), rgba(59,130,246,.15));
+  border:1px solid rgba(125,211,252,.45);
+  padding:10px 14px; border-radius:16px 16px 6px 16px; color:var(--text);
+  overflow-wrap:anywhere; word-break:break-word; white-space:pre-wrap;
+}
+
+/* Code blocks */
+.assistant-page .code-card{ width:min(740px,100%); margin:6px 0; border-radius:14px; border:1px solid var(--stroke); background:#0f1318; box-shadow:var(--shadow-1); overflow:hidden }
+.assistant-page .code-card-bar{ padding:6px 10px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,.1); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)) }
+.assistant-page .code-lang{ font-size:12px; color:var(--muted); font-weight:600; text-transform:lowercase }
+.assistant-page .code-pre{ margin:0; padding:10px 12px; background:#0b0f14; max-height:280px; overflow:auto; font-family:var(--mono); font-size:13px; line-height:1.45; color:#cfe8ff }
+.assistant-page .btn.ghost.xsmall{ height:26px; padding:0 9px; font-size:11.5px; border-radius:8px }
+
+/* ===== Sticky Quick actions + Input (fixed to bottom) ===== */
+.assistant-page .chat-footer{
+  position:fixed; left:0; right:0;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
+  z-index:900;
+
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  background:transparent; border:0; box-shadow:none;
+
+  /* side gutters */
+  padding-left:var(--page-gutter);
+  padding-right:var(--page-gutter);
+}
+
+/* we removed the old dark overlay that made a “ghost bar” */
+.assistant-page .chat-footer::before{ display:none }
+
+/* quick buttons */
+.assistant-page .quick-bar{
+  display:inline-flex; flex-wrap:wrap; justify-content:center; gap:10px;
+  padding:8px 12px; max-width:calc(100vw - (var(--page-gutter)*2));
+  background:linear-gradient(180deg, rgba(20,26,33,.92), rgba(14,18,23,.96));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;
+  box-shadow:0 8px 22px rgba(0,0,0,.40);
+  backdrop-filter:blur(16px) saturate(140%); -webkit-backdrop-filter:blur(16px) saturate(140%);
+}
+.assistant-page .quick-bar button{
+  background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.18);
+  color:var(--text); padding:6px 14px; border-radius:999px;
+  font-size:13px; font-weight:500; cursor:pointer;
+  transition:background .2s, transform .15s, box-shadow .2s, border-color .2s;
+}
+.assistant-page .quick-bar button:hover{
+  background:linear-gradient(180deg, rgba(125,211,252,.25), rgba(125,211,252,.15));
+  border-color:rgba(125,211,252,.45); transform:translateY(-1px);
+  box-shadow:0 4px 14px rgba(125,211,252,.25);
+}
+
+/* input */
+.assistant-page .chat-input-box{
+  width:100%; max-width:1080px; display:flex; align-items:center; gap:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+  border:1px solid var(--stroke); border-radius:20px; padding:12px;
+  box-shadow:var(--shadow-1);
+  backdrop-filter:blur(12px) saturate(120%); -webkit-backdrop-filter:blur(12px) saturate(120%);
+}
+.assistant-page .chat-input-box textarea{
+  flex:1; resize:none; border:none; outline:none; background:transparent; color:var(--text);
+  font-family:var(--ui); font-size:14px; line-height:1.5; max-height:220px; overflow:auto;
+  padding:10px 12px;            /* breathing room inside textarea */
+  min-height:44px;
+}
+.assistant-page .chat-input-box button{
+  background:linear-gradient(135deg,var(--brand-strong),var(--brand));
+  height:40px; width:40px; border:none; border-radius:12px; color:#04131a; font-weight:700; cursor:pointer;
+  transition:transform .12s ease, box-shadow .2s ease;
+}
+.assistant-page .chat-input-box button:hover{ transform:translateY(-1px); box-shadow:0 12px 30px rgba(125,211,252,.30) }
+
+/* typing dots */
+.assistant-page .typing-line{ display:flex; align-items:center; gap:8px; opacity:.9 }
+.assistant-page .typing-dots{ display:inline-flex; gap:6px }
+.assistant-page .typing-dots span{ width:6px; height:6px; border-radius:50%; background:rgba(231,236,243,.85); display:inline-block; animation:bounceDot 1.2s infinite ease-in-out }
+.assistant-page .typing-dots span:nth-child(2){ animation-delay:.15s }
+.assistant-page .typing-dots span:nth-child(3){ animation-delay:.30s }
+@keyframes bounceDot{ 0%,80%,100%{ transform:translateY(0); opacity:.6 } 40%{ transform:translateY(-6px); opacity:1 } }
+
+/* scrollbars */
+*{ scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.25) transparent }
+*::-webkit-scrollbar{ width:10px; height:10px }
+*::-webkit-scrollbar-thumb{ background:linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,.18)); border-radius:999px }
+
+/* responsive tweaks */
+@media (max-width:720px){
+  .assistant-page .workspace-header{ margin-top:10px; margin-bottom:8px; padding:12px 14px; border-radius:18px }
+  .assistant-page .quick-bar{ gap:8px; padding-inline:8px }
+  .assistant-page .quick-bar button{ padding:6px 10px; font-size:12.5px }
+  .assistant-page .chat-input-box{ padding:10px; border-radius:16px }
+  .assistant-page .chat-input-box textarea{ padding:10px; min-height:42px }
+}
+
+/* Center + sticky header (desktop & mobile) */
+.assistant-header-wrap{
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding-inline: clamp(12px, 4vw, 20px);
+  margin-bottom: 6px;
+}
+.assistant-header-wrap .workspace-header{
+  width: min(100%, 1100px);
+  margin: 0;            /* center via wrapper */
+}
+
+/* Ensure the page scrolls (so sticky header works on mobile) */
+.assistant-page .assistant-container{ overflow: visible; }
+.assistant-page .chat-body{ overflow: visible; }
+
+/* Even spacing between quick bar and input */
+.chat-footer .quick-bar{ margin-bottom: 8px; }
+.chat-footer .chat-input-box{ margin-top: 0; }
