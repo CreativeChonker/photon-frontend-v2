@@ -389,3 +389,37 @@ body{
 @media (max-width:720px){
   .header-actions{ display:none; }
 }
+
+/* Mobile-only Assistant button (top-right corner) */
+.mobile-assistant-btn {
+  display: none;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  background: var(--brand);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  z-index: 10;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.mobile-assistant-btn:hover {
+  transform: scale(1.08);
+  background: var(--brand-strong);
+}
+
+@media (max-width: 768px) {
+  .mobile-assistant-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-actions {
+    display: none;
+  }
+}
+
