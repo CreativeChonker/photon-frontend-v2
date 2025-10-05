@@ -48,8 +48,10 @@ export default function Workspace({ code, setCode }) {
   const navigate = useNavigate();
   const suppressQ = useRef([]);
 
+  // --- SOCKET SETUP ---
   useEffect(() => {
     const log = (msg) => setTerminalOutput((p) => p + msg + "\n");
+
     const onStdout = ({ text }) => {
       let chunk = String(text ?? "");
       const hadTrailing = /\r?\n$/.test(chunk);
@@ -107,6 +109,7 @@ export default function Workspace({ code, setCode }) {
     };
   }, []);
 
+  // --- RUN / RESTART CODE ---
   const runOrRestart = useCallback(() => {
     setTerminalOutput("");
     setWaitingForInput(false);
@@ -116,6 +119,7 @@ export default function Workspace({ code, setCode }) {
     setRunning(true);
   }, [code, autoIndent]);
 
+  // --- SHORTCUT KEYS ---
   useEffect(() => {
     const onKey = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -134,6 +138,7 @@ export default function Workspace({ code, setCode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [runOrRestart, running]);
 
+  // --- OCR FILE UPLOAD ---
   const openUploadPicker = () => fileInputRef.current?.click();
 
   const handleFilesSelected = async (e) => {
@@ -166,9 +171,11 @@ export default function Workspace({ code, setCode }) {
 
       setAccuracy(Math.max(0, Math.min(100, est)));
       setAccStatus(
-        data?.engine === "vision" ? "Google Vision" :
-        data?.engine === "keras" ? "Keras OCR" :
-        "Auto (Vision-first)"
+        data?.engine === "vision"
+          ? "Google Vision"
+          : data?.engine === "keras"
+          ? "Keras OCR"
+          : "Auto (Vision-first)"
       );
 
       if (extracted) {
@@ -193,117 +200,84 @@ export default function Workspace({ code, setCode }) {
   const goToCamera = () => navigate("/camera");
   const goToAssistant = () => navigate("/assistant");
 
+  // --- ONBOARDING TOUR ---
   const steps = [
     buildStep("#ws-run", "wink", "Run or restart your code. Tip: <b>Ctrl/⌘ + Enter</b>.", { side: "bottom" }),
     buildStep("#ws-editor", "smile", "This is the Monaco editor. Paste or type your code here.", { side: "right" }),
-    buildStep("#ws-terminal", "happy", "Program output shows here. When input is needed, type beside the prompt.", { side: "top" }),
+    buildStep("#ws-terminal", "happy", "Program output shows here.", { side: "top" }),
     buildStep("#ws-upload", "smile", "Upload image(s) of code to OCR them into the editor.", { side: "bottom" }),
-    buildStep("#ws-camera", "smile", "Open your camera and capture code directly.", { side: "bottom" }),
-    buildStep("#ws-assistant", "happy", "Open the Assistant for explanations, fixes, or suggestions.", { side: "bottom" }),
-    buildStep("#ws-ocr", "wink", "OCR accuracy indicator for your last import.", { side: "top" }),
+    buildStep("#ws-camera", "smile", "Open your camera to scan code directly.", { side: "bottom" }),
+    buildStep("#ws-assistant", "happy", "Open the Photon Assistant for explanations and suggestions.", { side: "bottom" }),
   ];
-  const { start: startWsTour } = useMascotTour(steps, { stagePadding: 10, onDestroyed: () => localStorage.setItem("seen_ws_tour", "1") });
+  const { start: startWsTour } = useMascotTour(steps, {
+    stagePadding: 10,
+    onDestroyed: () => localStorage.setItem("seen_ws_tour", "1"),
+  });
   const showFab = !localStorage.getItem("seen_ws_tour");
 
   return (
     <div className="workspace">
+      {/* HEADER */}
       <header className="workspace-header">
         <div className="brand">
           <Link to="/" className="brand-link">
-            <img
-              src={`${process.env.PUBLIC_URL}/images/photon.png`}
-              alt="Photon"
-              className="logo"
-            />
+            <img src={`${process.env.PUBLIC_URL}/images/photon.png`} alt="Photon" className="logo" />
           </Link>
           <h1>Workspace</h1>
         </div>
-      
-        {/* Desktop buttons (stay as-is) */}
+
+        {/* DESKTOP ACTIONS */}
         <div className="header-actions">
           <label className="toggle" title="Toggle auto-indent">
-            <input
-              type="checkbox"
-              checked={autoIndent}
-              onChange={(e) => setAutoIndent(e.target.checked)}
-            />
+            <input type="checkbox" checked={autoIndent} onChange={(e) => setAutoIndent(e.target.checked)} />
             <span>Auto-indent</span>
           </label>
-      
-          <button
-            id="ws-upload"
-            className="btn ghost"
-            onClick={openUploadPicker}
-            disabled={ocrLoading}
-            title="Upload image(s) to OCR"
-          >
-            <FiUpload />
-            <span>Upload</span>
+
+          <button id="ws-upload" className="btn ghost" onClick={openUploadPicker} disabled={ocrLoading} title="Upload image(s)">
+            <FiUpload /> <span>Upload</span>
           </button>
-      
-          <button
-            id="ws-camera"
-            className="btn ghost"
-            onClick={goToCamera}
-            disabled={ocrLoading}
-            title="Open camera for OCR"
-          >
-            <FiCamera />
-            <span>Camera</span>
+
+          <button id="ws-camera" className="btn ghost" onClick={goToCamera} disabled={ocrLoading} title="Open camera">
+            <FiCamera /> <span>Camera</span>
           </button>
-      
-          <button
-            id="ws-assistant"
-            className="btn primary assistant"
-            onClick={goToAssistant}
-            disabled={ocrLoading}
-            title="Open Photon Assistant"
-          >
-            <FiZap />
-            <span>Photon Assistant</span>
+
+          <button id="ws-assistant" className="btn primary assistant" onClick={goToAssistant} title="Open Assistant">
+            <FiZap /> <span>Photon Assistant</span>
           </button>
         </div>
-      
-        {/* Mobile-only Assistant button */}
-        <button
-          className="mobile-assistant-btn"
-          onClick={goToAssistant}
-          title="Open Assistant"
-        >
-          <FiZap />
-        </button>
       </header>
 
-
-
-
+      {/* MAIN */}
       <main className="workspace-main">
         <section id="ws-editor" className="editor-pane">
           {ocrLoading && (
             <div className="ocr-overlay">
               <div className="ocr-spinner" />
-              <div className="ocr-msg">
-                {ocrPhase === "Uploading" ? `Uploading… ${uploadPct}%` : "Processing…"}
-              </div>
+              <div className="ocr-msg">{ocrPhase === "Uploading" ? `Uploading… ${uploadPct}%` : "Processing…"}</div>
             </div>
           )}
-
           <Editor
             height="60vh"
             defaultLanguage="python"
             value={code}
             onChange={(val) => setCode(val ?? "")}
             onMount={(ed) => (editorRef.current = ed)}
-            options={{ fontSize: 14, minimap: { enabled: false }, wordWrap: "on", automaticLayout: true }}
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              wordWrap: "on",
+              automaticLayout: true,
+            }}
           />
         </section>
 
+        {/* TERMINAL */}
         <section className="terminal-pane">
           <div className="glass terminal-card">
             <div className="terminal-header">
               <span className="terminal-title">Terminal</span>
               <button id="ws-run" className="btn run-btn" onClick={runOrRestart} disabled={ocrLoading}>
-                <FiPlay className="icon" /><span>{running ? "Restart" : "Run"}</span>
+                <FiPlay className="icon" /> <span>{running ? "Restart" : "Run"}</span>
               </button>
             </div>
 
@@ -326,23 +300,23 @@ export default function Workspace({ code, setCode }) {
             </div>
           </div>
 
+          {/* OCR BAR */}
           <div id="ws-ocr" className="ocr-card glass">
             <div className="ocr-head">
               <div className="ocr-title-row">
                 <span>OCR Accuracy</span>
                 <button
                   className="ocr-info-btn"
-                  onClick={() => {
-                    const evt = new CustomEvent("photon:openOcrDetails");
-                    window.dispatchEvent(evt);
-                  }}
+                  onClick={() => window.dispatchEvent(new CustomEvent("photon:openOcrDetails"))}
                 >
                   Details
                 </button>
               </div>
               <strong>{Math.round(accuracy)}%</strong>
             </div>
-            <div className="ocr-sub">{ocrLoading ? (ocrPhase === "Uploading" ? "Uploading…" : "Processing…") : accStatus}</div>
+            <div className="ocr-sub">
+              {ocrLoading ? (ocrPhase === "Uploading" ? "Uploading…" : "Processing…") : accStatus}
+            </div>
             <div className="ocr-bar">
               <div
                 className={`ocr-fill ${ocrLoading ? "indeterminate" : ""}`}
@@ -353,7 +327,7 @@ export default function Workspace({ code, setCode }) {
         </section>
       </main>
 
-      {/* Mobile speed-dial actions (hidden on desktop) */}
+      {/* MOBILE ACTIONS */}
       <MobileActions
         onUpload={openUploadPicker}
         onCamera={goToCamera}
@@ -363,7 +337,7 @@ export default function Workspace({ code, setCode }) {
         disabled={ocrLoading}
       />
 
-      {/* Tour FAB (unchanged) */}
+      {/* TOUR BUTTON */}
       {showFab && (
         <MascotGuideButton
           steps={steps}
@@ -376,7 +350,7 @@ export default function Workspace({ code, setCode }) {
         />
       )}
 
-      {/* Hidden file input stays in DOM for mobile Upload from FAB */}
+      {/* FILE INPUT */}
       <input
         ref={fileInputRef}
         type="file"
@@ -388,4 +362,3 @@ export default function Workspace({ code, setCode }) {
     </div>
   );
 }
-
