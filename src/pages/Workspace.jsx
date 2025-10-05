@@ -210,12 +210,16 @@ export default function Workspace({ code, setCode }) {
       <header className="workspace-header">
         <div className="brand">
           <Link to="/" className="brand-link">
-            <img src={`${process.env.PUBLIC_URL}/images/photon.png`} alt="Photon" className="logo" />
+            <img
+              src={`${process.env.PUBLIC_URL}/images/photon.png`}
+              alt="Photon"
+              className="logo"
+            />
           </Link>
           <h1>Workspace</h1>
         </div>
-
-        {/* Desktop actions (hidden on mobile) */}
+      
+        {/* Desktop buttons (stay as-is) */}
         <div className="header-actions">
           <label className="toggle" title="Toggle auto-indent">
             <input
@@ -225,7 +229,7 @@ export default function Workspace({ code, setCode }) {
             />
             <span>Auto-indent</span>
           </label>
-
+      
           <button
             id="ws-upload"
             className="btn ghost"
@@ -236,7 +240,7 @@ export default function Workspace({ code, setCode }) {
             <FiUpload />
             <span>Upload</span>
           </button>
-
+      
           <button
             id="ws-camera"
             className="btn ghost"
@@ -247,7 +251,7 @@ export default function Workspace({ code, setCode }) {
             <FiCamera />
             <span>Camera</span>
           </button>
-
+      
           <button
             id="ws-assistant"
             className="btn primary assistant"
@@ -259,7 +263,17 @@ export default function Workspace({ code, setCode }) {
             <span>Photon Assistant</span>
           </button>
         </div>
+      
+        {/* Mobile-only Assistant button */}
+        <button
+          className="mobile-assistant-btn"
+          onClick={goToAssistant}
+          title="Open Assistant"
+        >
+          <FiZap />
+        </button>
       </header>
+
 
 
 
@@ -374,3 +388,4 @@ export default function Workspace({ code, setCode }) {
     </div>
   );
 }
+
