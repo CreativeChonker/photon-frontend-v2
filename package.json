@@ -1,8 +1,8 @@
 {
-  "homepage": "https://creativechonker.github.io/photon-frontend",
   "name": "ocr-prototype-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@codemirror/lang-python": "^6.2.0",
     "@monaco-editor/react": "^4.7.0",
@@ -28,9 +28,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
